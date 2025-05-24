@@ -28,10 +28,13 @@
 ### ▶️ Demo
 
 📹 **Watch InstantAid in action**
-👉 \[Demo Video Link Here]
+
+https://github.com/user-attachments/assets/9efc36d1-8bd6-480a-90ff-3c9825bd431f
+
+
 
 🌐 **Live Demo**
-👉 \[Live Project Link Here]
+https://instant-aid-ten.vercel.app/
 
 ---
 
