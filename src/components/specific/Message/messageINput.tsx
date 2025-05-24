@@ -18,9 +18,8 @@ import {
 } from "lucide-react";
 import { copilotTransformOptions } from "@/lib/chatMessages";
 import { Button } from "@/components/ui/button";
+import { Select, SelectContent, SelectItem, SelectTrigger } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
-
-// Mock data for the copilot options (now only used if needed elsewhere
 
 interface MessageInputProps {
   onSendMessage: (content: string) => void;
@@ -43,16 +42,23 @@ const SelectionToolbar: React.FC<SelectionToolbarProps> = ({
   onClose,
 }) => {
   const toolbarRef = useRef<HTMLDivElement>(null);
-  const [showCopilotMenu, setShowCopilotMenu] = useState(false);
-  const [selectedAction, setSelectedAction] = useState("summarize");
+  const [selectedAction, setSelectedAction] = useState(""); // Reintroduced for controlled Select
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
+      // Check if the click is outside the toolbar
       if (
         toolbarRef.current &&
         !toolbarRef.current.contains(event.target as Node)
       ) {
-        onClose();
+        // Check if the click is within SelectContent
+        const isSelectContent = (event.target as HTMLElement).closest(
+          "[data-radix-select-viewport]"
+        );
+        console.log("Click outside detected, isSelectContent:", !!isSelectContent); // Debug log
+        if (!isSelectContent) {
+          onClose();
+        }
       }
     };
 
@@ -68,43 +74,40 @@ const SelectionToolbar: React.FC<SelectionToolbarProps> = ({
   ];
 
   const handleCopilotSelect = (actionId: string) => {
-    setSelectedAction(actionId);
-    onCopilotAction(actionId, selectedText);
-    setShowCopilotMenu(false);
+    if (actionId) {
+      onCopilotAction(actionId, selectedText);
+      setSelectedAction(""); // Reset selection
+      onClose(); // Close the toolbar
+    }
   };
+
   return (
     <div
       ref={toolbarRef}
       className="absolute bottom-full mb-2 left-1/2 transform -translate-x-1/2 z-50 bg-white border border-gray-200 rounded-xl shadow-xl overflow-hidden animate-in fade-in slide-in-from-bottom-2 duration-200"
     >
       <div className="flex items-center divide-x divide-gray-100">
-        {/* AI Copilot Button with Dropdown */}
+        {/* AI Copilot Select */}
         <div className="relative">
-          <button
-            onClick={() => setShowCopilotMenu((prev)=>!prev)}
-            className="flex items-center gap-2 px-3 py-2 hover:bg-blue-50 text-blue-600 transition-colors group"
-            title="AI Actions"
-          >
-            <Bot size={16} className="group-hover:scale-110 transition-transform" />
-            <ChevronDown size={12} className={`transition-transform ${showCopilotMenu ? 'rotate-180' : ''}`} />
-          </button>
-          
-          {showCopilotMenu && (
-            <div className="absolute top-full mt-1 left-0 min-w-[220px] bg-white border text-secondary  border-gray-200 rounded-lg shadow-xl overflow-hidden z-[60] animate-in fade-in slide-in-from-top-2 duration-200">
-              <div className="py-2">
-                {copilotTransformOptions.map((action) => (
-                  <button
-                    key={action.id}
-                    onClick={() => handleCopilotSelect(action.id)}
-                    className="w-full text-left px-4 py-3 text-sm z-10 hover:bg-blue-50 transition-colors border-b border-gray-50 last:border-b-0"
-                  >
+          <Select value={selectedAction} onValueChange={handleCopilotSelect}>
+            <SelectTrigger className="flex items-center gap-2 px-3 py-2 hover:bg-blue-50 ring-1 text-blue-600 transition-colors group border-none shadow-none bg-transparent h-auto">
+              <Bot size={16} className="group-hover:scale-110 transition-transform" />
+            </SelectTrigger>
+            <SelectContent className="bg-white text-black min-w-[220px] z-[100]" side="bottom" align="start">
+              {copilotTransformOptions.map((action) => (
+                <SelectItem
+                  key={action.id}
+                  value={action.id}
+                  className="cursor-pointer hover:bg-blue-50 focus:bg-blue-50"
+                >
+                  <div className="py-1">
                     <div className="font-medium text-gray-800">{action.label}</div>
-                    <div className="text-xs text-gray-500 mt-1">{action.description}</div>
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
+                    {/* <div className="text-xs text-gray-500 mt-1">{action.description}</div> */}
+                  </div>
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
 
         {/* Format Options */}
@@ -121,7 +124,7 @@ const SelectionToolbar: React.FC<SelectionToolbarProps> = ({
           ))}
         </div>
       </div>
-      
+
       {/* Subtle indicator arrow */}
       <div className="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-l-transparent border-r-transparent border-t-white"></div>
     </div>
@@ -196,7 +199,8 @@ export const MessageInput: React.FC<MessageInputProps> = ({
     const selection = window.getSelection();
     if (selection && selection.toString().length > 0 && textareaRef.current) {
       const selectedTextContent = selection.toString();
-      setSelectedText(selectedTextContent);
+      // setSelectedText(selectedTextContent);
+      setSelectedText(message)
       setShowToolbar(true);
     } else {
       setShowToolbar(false);
@@ -205,6 +209,7 @@ export const MessageInput: React.FC<MessageInputProps> = ({
   };
 
   const handleCopilotAction = (actionId: string, text: string) => {
+    console.log("handleCopilotAction called with:", actionId, text); // Debug log
     const action = copilotTransformOptions.find((a) => a.id === actionId);
     if (action) {
       handleAskCopilot(`${action.prompt}${text}`);
@@ -269,7 +274,7 @@ export const MessageInput: React.FC<MessageInputProps> = ({
       )}
 
       <div className="flex flex-col gap-3">
-{/* Text Input Area */}
+        {/* Text Input Area */}
         <div
           className={`relative transition-all duration-200 ${
             isFocused ? "ring-2 ring-blue-200" : ""
@@ -286,15 +291,15 @@ export const MessageInput: React.FC<MessageInputProps> = ({
             placeholder="Type a message..."
             disabled={disabled}
             rows={1}
-            className="w-full resize-none border-none outline-none p-3 text-gray-800 placeholder-gray-400 bg-gray-50 rounded-lg transition-all duration-200 focus:bg-white"
+            className="w-full scrollbar-hide resize-none border-none outline-none p-3 text-gray-800 placeholder-gray-400 bg-gray-50 rounded-lg transition-all duration-200 focus:bg-white"
             style={{
               minHeight: "44px",
-              maxHeight: "120px",
+              maxHeight: "200px",
               transition: "height 0.1s ease-out",
             }}
           />
 
-{/* Character count for long messages */}
+          {/* Character count for long messages */}
           {message.length > 500 && (
             <div className="absolute bottom-2 right-2 text-xs text-gray-400">
               {message.length}/2000
@@ -302,7 +307,7 @@ export const MessageInput: React.FC<MessageInputProps> = ({
           )}
         </div>
 
-{/* Action Bar */}
+        {/* Action Bar */}
         <div className="flex justify-between items-center">
           <div className="flex items-center gap-3">
             <button

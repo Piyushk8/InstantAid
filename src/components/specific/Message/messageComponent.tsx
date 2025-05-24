@@ -9,6 +9,7 @@ import {
   Zap,
   SmileIcon,
   BotIcon,
+  Bot,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -54,14 +55,14 @@ const handleTextSelection = (
   }
 };
 
-// Message Component
+
 export const Message: React.FC<MessageProps> = ({
   message,
   isOwn,
   handleAskCopilot,
 }) => {
   const [selectedText, setSelectedText] = useState<string | null>(null);
-  // const [askCopilot, setAskCopilot] = useState(false);
+
   const formatTime = (timestamp: Date): string => {
     return new Date(timestamp).toLocaleTimeString([], {
       hour: "2-digit",
@@ -97,8 +98,8 @@ export const Message: React.FC<MessageProps> = ({
       <div
         className={`max-w-xs lg:max-w-md px-4 py-2 rounded-2xl ${
           isOwn
-            ? "bg-blue-500 text-white rounded-br-md"
-            : "bg-gray-100 text-gray-800 rounded-bl-md"
+            ? "bg-violet-300 text-black rounded-br-md"
+            : "bg-gray-100 text-gray-900 rounded-bl-md"
         }`}
       >
         <p
@@ -109,19 +110,20 @@ export const Message: React.FC<MessageProps> = ({
         </p>
         <div
           className={`flex items-center justify-end mt-1 space-x-1 ${
-            isOwn ? "text-blue-100" : "text-gray-500"
+            isOwn ? "text-black" : "text-gray-800"
           }`}
         >
           <span className="text-xs">{formatTime(message.timestamp)}</span>
-          {isOwn && getStatusIcon(message.status)}
+          {/* {isOwn && getStatusIcon(message.status)} */}
         </div>
       </div>
       {!isOwn && selectedText && (
         <button
           onClick={() => handleAskCopilot(selectedText)}
-          className="absolute inset-0 right-0 h-fit w-fit text-xs bg-gray-200 rounded px-2 py-1 opacity-0 group-hover:opacity-100 transition"
+          className="absolute top-[-2rem] left-1/2 transform -translate-x-1/2 flex items-center gap-1 px-3 py-1 bg-white text-background text-xs font-semibold rounded-lg shadow-lg shadow-violet-500/50 opacity-0 group-hover:opacity-100 transition-opacity"
         >
-          Ask Copilot <BotIcon className="h-5 w-5" fill="" />
+          Ask Copilot
+          <Bot className="h-4 w-4" />
         </button>
       )}
     </div>

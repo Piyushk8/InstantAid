@@ -20,7 +20,7 @@ export const AskCopilot = async ({
         maxOutputTokens: 500,
         temperature: 0.2,
         systemInstruction: `you are support chat bot if you dont get the resource for answering qeury,
-           just answer in genral terms like any customer supoprt. make response accoring to the tone query asks then only make a tone`,
+           just answer in genral terms like any customer supoprt. make response accoring to the tone query asks then only make a tone. `,
       },
     });
     if (!response.text) {

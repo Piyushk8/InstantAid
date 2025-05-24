@@ -1,6 +1,7 @@
 "use client";
 
 import { AskCopilot } from "@/app/Copilot";
+import { Bot } from "lucide-react";
 import { useEffect, useState, useRef, useTransition, useCallback } from "react";
 
 interface Message {
@@ -16,6 +17,20 @@ interface CopilotSidebarProps {
   onClose: () => void;
 }
 
+function DetailsScreen() {
+  return (
+    <div className="flex-1 flex items-center justify-center">
+      <div className="text-center text-muted-foreground">
+        <div className="w-16 h-16 mx-auto mb-4 bg-gradient-to-r from-violet-500 to-purple-600 rounded-full flex items-center justify-center">
+          <span className="text-2xl text-white">📋</span>
+        </div>
+        <h3 className="text-lg font-semibold mb-2">Details Panel</h3>
+        <p className="text-sm">Details functionality coming soon...</p>
+      </div>
+    </div>
+  );
+}
+
 export function CopilotSidebar({
   query,
   onResponse,
@@ -27,14 +42,14 @@ export function CopilotSidebar({
   const [error, setError] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const processedQueries = useRef<Set<string>>(new Set());
-  const [pageToggle, setpageToggle] = useState<"copilot"|"details">("copilot")
+  const [pageToggle, setPageToggle] = useState<"copilot" | "details">(
+    "copilot"
+  );
 
-  // Generate unique ID for messages
   const generateMessageId = useCallback(() => {
     return `msg_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
   }, []);
 
-  // Handle incoming query prop changes with duplicate prevention
   useEffect(() => {
     if (query?.trim() && !processedQueries.current.has(query)) {
       processedQueries.current.add(query);
@@ -49,7 +64,6 @@ export function CopilotSidebar({
     }
   }, [query, generateMessageId]);
 
-  // Auto-scroll to the latest message with error handling
   useEffect(() => {
     try {
       messagesEndRef.current?.scrollIntoView({
@@ -57,7 +71,6 @@ export function CopilotSidebar({
         block: "end",
       });
     } catch (scrollError) {
-      // Fallback for browsers that don't support smooth scrolling
       messagesEndRef.current?.scrollIntoView();
     }
   }, [messages, isPending]);
@@ -194,31 +207,9 @@ export function CopilotSidebar({
     setError(null);
   }, []);
 
-  // No longer need global latest bot message tracking
-
-  return (
-    <div className="h-full w-full bg-background shadow-2xl z-50 p-4 flex flex-col">
-      {/* Header */}
-      <button
-        onClick={onClose}
-        className="text-foreground fixed right-2 hover:text-foreground/80 text-xl font-bold w-8 h-8 flex items-center justify-center rounded-full hover:bg-secondary transition-colors"
-        aria-label="Close copilot"
-      >
-        ×
-      </button>
-      <div className="flex gap-2 items-center mb-2 border-b border-gray-400 pb-2">
-        <button>
-          <h2 className="font-semibold text-foreground text-lg focus:text-violet-600">
-            Copilot
-          </h2>
-        </button>
-        <button>
-          <h2 className="font-semibold text-foreground text-lg focus:text-violet-600">
-            Details
-          </h2>
-        </button>
-      </div>
-
+  // Copilot Screen Component
+  const CopilotScreen = () => (
+    <>
       {/* Error Banner */}
       {error && (
         <div className="mb-4 p-3 bg-red-100 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg flex justify-between items-center">
@@ -236,75 +227,106 @@ export function CopilotSidebar({
       )}
 
       {/* Chat Messages */}
-      <div className="flex-1 overflow-y-auto mb-4 space-y-3 scrollbar-thin scrollbar-thumb-secondary scrollbar-track-transparent">
+      <div className="flex-1 overflow-y-auto mb-4 space-y-6 px-4 py-6 scrollbar-thin scrollbar-thumb-secondary scrollbar-track-transparent">
         {messages.length === 0 && (
-          <div className="text-center text-muted-foreground py-8">
-            <p>Start a conversation with the AI Copilot</p>
+          <div className="text-center text-muted-foreground py-16">
+            <div className="w-16 h-16 mx-auto mb-4 bg-gradient-to-r from-violet-500 via-purple-500 to-pink-500 rounded-full flex items-center justify-center">
+              <span className="text-2xl text-white">🤖</span>
+            </div>
+            <p className="text-lg font-semibold mb-2">AI Copilot Ready</p>
+            <p className="text-sm text-gray-500">
+              Start a conversation with the AI Copilot
+            </p>
           </div>
         )}
 
         {messages.map((msg) => (
-          <div key={msg.id} className="group">
-            <div
-              className={`p-3 rounded-lg text-sm whitespace-pre-wrap max-w-[85%] ${
-                msg.type === "user"
-                  ? "bg-secondary text-secondary-foreground ml-auto"
-                  : "bg-gradient-to-r from-violet-500 via-green-500 to-blue-500 text-white mr-auto"
-              } shadow-sm`}
-            >
-              <div className="break-words">{msg.content}</div>
-              <div
-                className={`text-xs mt-1 opacity-70 ${
-                  msg.type === "user" ? "text-right" : "text-left"
-                }`}
-              >
-                {msg.timestamp.toLocaleTimeString([], {
-                  hour: "2-digit",
-                  minute: "2-digit",
-                })}
-              </div>
+          <div key={msg.id} className="flex flex-col gap-4">
+            {/* Avatar and name */}
+            <div className="flex flex-col items-center w-12">
+              {msg.type === "bot" ? (
+                <div className="bg-gradient-to-br from-violet-500 to-pink-500 h-10 w-10 rounded-full flex items-center justify-center">
+                  <Bot size={18} className="text-white" />
+                </div>
+              ) : (
+                <div className="bg-violet-500 text-white font-bold h-10 w-10 rounded-full flex items-center justify-center ring-2 ring-gray-100">
+                  {msg.type[0].toUpperCase()}
+                </div>
+              )}
+              <span className="text-[10px] text-muted-foreground mt-1">
+                {msg.type === "user" ? "You" : "AI"}
+              </span>
             </div>
 
-            {/* Individual Add to Composer button for each AI response */}
-            {msg.type === "bot" && (
-              <div className="mt-2 mr-auto max-w-[85%] opacity-0 group-hover:opacity-100 transition-opacity">
-                <button
-                  onClick={(e) => {
-                    e.preventDefault();
-                    handleAddToComposer(msg.content);
-                  }}
-                  className="text-xs bg-blue-500 text-white rounded px-3 py-1 hover:bg-blue-600 transition-colors shadow-sm"
-                  disabled={isPending}
-                >
-                  Add to Composer
-                </button>
+            {/* Message bubble */}
+            <div className="flex ml-6 flex-col max-w-[80%] group">
+              <div
+                className={`p-3 rounded-xl text-sm whitespace-pre-wrap shadow-sm ${
+                  msg.type === "user"
+                    ? "bg-slate-100 text-secondary-foreground"
+                    : "bg-gradient-to-br from-violet-300 to-pink-300 text-black"
+                }`}
+              >
+                <div className="break-words">{msg.content}</div>
+                <div className="text-[11px] text-muted-foreground mt-1 text-right">
+                  {msg.timestamp.toLocaleTimeString([], {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  })}
+                </div>
               </div>
-            )}
+
+              {/* Add to Composer button for bot responses */}
+              {msg.type === "bot" && (
+                <div className="mt-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <button
+                    onClick={(e) => {
+                      e.preventDefault();
+                      handleAddToComposer(msg.content);
+                    }}
+                    className="text-xs bg-blue-500 text-white rounded px-3 py-1 hover:bg-blue-600 transition-colors shadow-sm"
+                    disabled={isPending}
+                  >
+                    Add to Composer
+                  </button>
+                </div>
+              )}
+            </div>
           </div>
         ))}
 
+        {/* Loading spinner */}
         {isPending && (
-          <div className="p-3 rounded-lg bg-secondary text-secondary-foreground text-sm mr-auto max-w-[85%] shadow-sm">
-            <div className="flex items-center space-x-2">
-              <div className="flex space-x-1">
-                <div className="w-2 h-2 bg-current rounded-full animate-bounce"></div>
-                <div
-                  className="w-2 h-2 bg-current rounded-full animate-bounce"
-                  style={{ animationDelay: "0.1s" }}
-                ></div>
-                <div
-                  className="w-2 h-2 bg-current rounded-full animate-bounce"
-                  style={{ animationDelay: "0.2s" }}
-                ></div>
+          <div className="flex gap-4">
+            <div className="flex flex-col items-center w-12">
+              <div className="bg-gradient-to-br from-violet-500 to-pink-500 h-10 w-10 rounded-full flex items-center justify-center">
+                <Bot size={18} className="text-white" />
               </div>
-              <span>Thinking...</span>
+              <span className="text-[10px] text-muted-foreground mt-1">AI</span>
+            </div>
+            <div className="p-3 rounded-xl bg-secondary text-secondary-foreground text-sm shadow-sm max-w-[80%]">
+              <div className="flex items-center space-x-2">
+                <div className="flex space-x-1">
+                  <div className="w-2 h-2 bg-current rounded-full animate-bounce"></div>
+                  <div
+                    className="w-2 h-2 bg-current rounded-full animate-bounce"
+                    style={{ animationDelay: "0.1s" }}
+                  ></div>
+                  <div
+                    className="w-2 h-2 bg-current rounded-full animate-bounce"
+                    style={{ animationDelay: "0.2s" }}
+                  ></div>
+                </div>
+                <span>Thinking...</span>
+              </div>
             </div>
           </div>
         )}
+
         <div ref={messagesEndRef} />
       </div>
 
-      {/* Input Area */}
+      {/* Input Area - Only show in Copilot screen */}
       <div className="flex gap-2">
         <input
           type="text"
@@ -324,6 +346,55 @@ export function CopilotSidebar({
           {isPending ? "..." : "Send"}
         </button>
       </div>
+    </>
+  );
+
+  return (
+    <div className="h-full w-full bg-background shadow-2xl z-50 p-4 flex flex-col">
+      {/* Header */}
+      <button
+        onClick={onClose}
+        className="text-foreground fixed right-2 hover:text-foreground/80 text-xl font-bold w-8 h-8 flex items-center justify-center rounded-full hover:bg-secondary transition-colors"
+        aria-label="Close copilot"
+      >
+        ×
+      </button>
+
+      {/* Toggle Navigation */}
+      <div className="flex gap-1 items-center mb-6 border-b border-gray-200 dark:border-gray-700 pb-2">
+        {/* Copilot Button */}
+        <button
+          onClick={() => setPageToggle("copilot")}
+          className={`relative px-4 py-2 font-semibold text-lg rounded-lg transition-all duration-300 group ${
+            pageToggle === "copilot"
+              ? "text-transparent bg-gradient-to-r from-violet-600 via-purple-600 to-pink-600 bg-clip-text"
+              : "text-foreground hover:text-violet-600"
+          }`}
+        >
+          Copilot
+          {pageToggle === "copilot" && (
+            <span className="absolute left-1/2 -bottom-0.5 h-[2px] w-10 -translate-x-1/2 bg-gradient-to-r from-violet-600 via-purple-600 to-pink-600 rounded-full animate-pulse" />
+          )}
+        </button>
+
+        {/* Details Button */}
+        <button
+          onClick={() => setPageToggle("details")}
+          className={`relative px-4 py-2 font-semibold text-lg rounded-lg transition-all duration-300 group ${
+            pageToggle === "details"
+              ? "text-transparent bg-gradient-to-r from-violet-600 via-purple-600 to-pink-600 bg-clip-text"
+              : "text-foreground hover:text-violet-600"
+          }`}
+        >
+          Details
+          {pageToggle === "details" && (
+            <span className="absolute left-1/2 -bottom-0.5 h-[2px] w-10 -translate-x-1/2 bg-gradient-to-r from-violet-600 via-purple-600 to-pink-600 rounded-full animate-pulse" />
+          )}
+        </button>
+      </div>
+
+      {/* Content Area */}
+      {pageToggle === "copilot" ? <CopilotScreen /> : <DetailsScreen />}
     </div>
   );
 }
