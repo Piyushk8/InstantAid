@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
-import { MoreVertical, Phone, Video, Info, Sheet } from "lucide-react";
+import { MoreVertical, Phone, Video, Info, Sheet, MoonStarIcon, MoreHorizontal } from "lucide-react";
 import { Message, TypingIndicator } from "./messageComponent";
 import { chatMessages, chatNames } from "@/lib/chatMessages";
 import { useParams, useSearchParams } from "next/navigation";
@@ -159,36 +159,25 @@ const ChatArea: React.FC<ChatAreaProps> = () => {
         <div className="flex-shrink-0 px-6 py-4 shadow-md">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-semibold">
-                {getChatName().charAt(0)}
-              </div>
               <div>
-                <h3 className="font-semibold text-gray-900">{getChatName()}</h3>
-                <p
+                <h3 className="font-bold text-lg text-gray-900">{getChatName()}</h3>
+                {/* <p
                   className={`text-sm ${
                     isTyping ? "text-blue-500" : "text-gray-500"
                   }`}
                 >
                   {isTyping ? "typing..." : onlineStatus}
-                </p>
+                </p> */}
               </div>
             </div>
             <div className="flex items-center space-x-2">
               <button className="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-full transition-colors">
-                <Phone className="w-5 h-5" />
-              </button>
-              <button className="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-full transition-colors">
-                <Video className="w-5 h-5" />
-              </button>
-              <button className="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-full transition-colors">
-                <Info className="w-5 h-5" />
-              </button>
-              <button className="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-full transition-colors">
-                <MoreVertical
+                <MoreHorizontal
                   className="w-5 h-5"
                   onClick={handleAISidebarOpen}
                 />
               </button>
+              <MoonStarIcon className="rotate-270" fill="" size={18}/>
             </div>
           </div>
         </div>

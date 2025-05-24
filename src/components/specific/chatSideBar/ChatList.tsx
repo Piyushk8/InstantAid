@@ -23,18 +23,21 @@ export default function ChatList() {
   });
 
   return (
-    <div className="w-full">
-      {chatList.map((chat) => (
-        <ChatListItem
-          key={chat.chatId}
-          chatId={chat.chatId}
-          name={chat.name}
-          lastMessage={chat.lastMessage}
-          timestamp={chat.timestamp}
-          avatar={chat.avatar}
-          onClick={handleNavigate}
-        />
-      ))}
+    <div className="w-full scrollbar-hide bg-white shadow-sm rounded-lg overflow-hidden">
+      
+      <div className="scrollbar-hide">
+        {chatList.map((chat) => (
+          <ChatListItem
+            key={chat.chatId}
+            chatId={chat.chatId}
+            name={chat.name}
+            lastMessage={chat.lastMessage}
+            timestamp={chat.timestamp}
+            avatar={chat.avatar}
+            onClick={handleNavigate}
+          />
+        ))}
+      </div>
     </div>
   );
 }

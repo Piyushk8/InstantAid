@@ -18,7 +18,7 @@ export default function ChatLayout({
       {/* Main Content */}
       <div className="flex-1 flex min-h-0 overflow-hidden">
         {/* Left Sidebar - Chat List */}
-        <aside className="hidden sm:flex sm:flex-shrink-0 sm:flex-col w-[280px] border-r">
+        <aside className="hidden sm:flex sm:flex-shrink-0 sm:flex-col w-[280px]">
           <ChatSidebar />
         </aside>
 
