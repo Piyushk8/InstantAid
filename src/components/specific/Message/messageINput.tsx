@@ -18,7 +18,12 @@ import {
 } from "lucide-react";
 import { copilotTransformOptions } from "@/lib/chatMessages";
 import { Button } from "@/components/ui/button";
-import { Select, SelectContent, SelectItem, SelectTrigger } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+} from "@/components/ui/select";
 import { cn } from "@/lib/utils";
 
 interface MessageInputProps {
@@ -55,7 +60,10 @@ const SelectionToolbar: React.FC<SelectionToolbarProps> = ({
         const isSelectContent = (event.target as HTMLElement).closest(
           "[data-radix-select-viewport]"
         );
-        console.log("Click outside detected, isSelectContent:", !!isSelectContent); // Debug log
+        console.log(
+          "Click outside detected, isSelectContent:",
+          !!isSelectContent
+        ); // Debug log
         if (!isSelectContent) {
           onClose();
         }
@@ -91,9 +99,16 @@ const SelectionToolbar: React.FC<SelectionToolbarProps> = ({
         <div className="relative">
           <Select value={selectedAction} onValueChange={handleCopilotSelect}>
             <SelectTrigger className="flex items-center gap-2 px-3 py-2 hover:bg-blue-50 ring-1 text-blue-600 transition-colors group border-none shadow-none bg-transparent h-auto">
-              <Bot size={16} className="group-hover:scale-110 transition-transform" />
+              <Bot
+                size={16}
+                className="group-hover:scale-110 transition-transform"
+              />
             </SelectTrigger>
-            <SelectContent className="bg-white text-black min-w-[220px] z-[100]" side="bottom" align="start">
+            <SelectContent
+              className="bg-white text-black min-w-[220px] z-[100]"
+              side="bottom"
+              align="start"
+            >
               {copilotTransformOptions.map((action) => (
                 <SelectItem
                   key={action.id}
@@ -101,7 +116,9 @@ const SelectionToolbar: React.FC<SelectionToolbarProps> = ({
                   className="cursor-pointer hover:bg-blue-50 focus:bg-blue-50"
                 >
                   <div className="py-1">
-                    <div className="font-medium text-gray-800">{action.label}</div>
+                    <div className="font-medium text-gray-800">
+                      {action.label}
+                    </div>
                     {/* <div className="text-xs text-gray-500 mt-1">{action.description}</div> */}
                   </div>
                 </SelectItem>
@@ -144,7 +161,8 @@ export const MessageInput: React.FC<MessageInputProps> = ({
   const [isFocused, setIsFocused] = useState<boolean>(false);
 
   const textareaRef = useRef<HTMLTextAreaElement>(null);
-  const typingTimeoutRef = useRef<NodeJS.Timeout>();
+  const typingTimeoutRef = useRef<NodeJS.Timeout | undefined>(undefined);
+
   const containerRef = useRef<HTMLDivElement>(null);
 
   const handleSubmit = useCallback((): void => {
@@ -200,7 +218,7 @@ export const MessageInput: React.FC<MessageInputProps> = ({
     if (selection && selection.toString().length > 0 && textareaRef.current) {
       const selectedTextContent = selection.toString();
       // setSelectedText(selectedTextContent);
-      setSelectedText(message)
+      setSelectedText(message);
       setShowToolbar(true);
     } else {
       setShowToolbar(false);

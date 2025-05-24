@@ -9,6 +9,10 @@ export default {
   ],
   theme: {
     extend: {
+      backgroundImage: {
+        "violet-pink-gradient":
+          "linear-gradient(90deg, #7c3aed, #8b5cf6, #ec4899)",
+      },
       colors: {
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",

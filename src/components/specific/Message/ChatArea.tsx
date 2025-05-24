@@ -1,10 +1,18 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
-import { MoreVertical, Phone, Video, Info, Sheet, MoonStarIcon, MoreHorizontal } from "lucide-react";
+import {
+  MoreVertical,
+  Phone,
+  Video,
+  Info,
+  Sheet,
+  MoonStarIcon,
+  MoreHorizontal,
+} from "lucide-react";
 import { Message, TypingIndicator } from "./messageComponent";
 import { chatMessages, chatNames } from "@/lib/chatMessages";
-import { useParams, useSearchParams } from "next/navigation";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { CopilotSidebar } from "../AIToolsPage";
 import { MessageInput } from "./messageINput";
 import { SheetContent } from "@/components/ui/sheet";
@@ -34,6 +42,13 @@ const ChatArea: React.FC<ChatAreaProps> = () => {
   const chatId = params.chatId;
   const [copilotQuery, setCopilotQuery] = useState<string>("");
   const [copilotResponse, setCopilotResponse] = useState("");
+  const router = useRouter();
+  useEffect(() => {
+    if (!chatId || !chatNames[chatId]) {
+      router.push("/");
+    }
+  }, [chatId, router]);
+
   // Load messages for the current chat
   useEffect(() => {
     const chatMessages_ = chatMessages[chatId] || [];
@@ -160,7 +175,9 @@ const ChatArea: React.FC<ChatAreaProps> = () => {
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
               <div>
-                <h3 className="font-bold text-lg text-gray-900">{getChatName()}</h3>
+                <h3 className="font-bold text-lg text-gray-900">
+                  {getChatName()}
+                </h3>
                 {/* <p
                   className={`text-sm ${
                     isTyping ? "text-blue-500" : "text-gray-500"
@@ -177,7 +194,7 @@ const ChatArea: React.FC<ChatAreaProps> = () => {
                   onClick={handleAISidebarOpen}
                 />
               </button>
-              <MoonStarIcon className="rotate-270" fill="" size={18}/>
+              <MoonStarIcon className="rotate-270" fill="" size={18} />
             </div>
           </div>
         </div>
